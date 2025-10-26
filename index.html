@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Clock App</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap" rel="stylesheet">
+        
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div class="app-container">
+
+        <header>
+            <nav>
+                <ul class="ul-underline">
+                    <li><button class="mode-btn active" id="clock">Clock</button></li>
+                    <li><button class="mode-btn" id="stopwatch">Stopwatch</button></li>
+                    <li><button class="mode-btn" id="timer">Timer</button></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+        <!-- Clock -->
+        <div id="display">Loading...</div>
+
+        <!-- Stopwatch controls -->
+        <div id="stopwatch-controls" class="controls">
+            <ul>
+                <li><button id="start-stopwatch">Start</button></li>
+                <li><button id="pause-stopwatch">Pause</button></li>
+                <li><button id="reset-stopwatch">Reset</button></li>
+            </ul>
+
+        </div>
+
+        <!-- Timer controls -->
+        <div id="timer-controls" class="controls ">
+            <ul class="less-gap ul-underline">
+                <li>
+                    <input id="timer-input" type="number" min="1" max="23" placeholder="00" />
+                </li>:
+                <li>
+                    <input id="timer-input" type="number" min="1" max="60" placeholder="00" />
+                </li>:
+                <li>
+                    <input id="timer-input" type="number" min="1" max="60" placeholder="00" />
+                </li>
+            </ul>
+            <ul>
+                <li><button id="start-timer">Start</button></li>
+                <li><button id="pause-timer">Pause</button></li>
+                <li><button id="reset-timer">Reset</button></li>
+            </ul>
+        </div>
+        </main>
+    </div>
+    <!-- JavaScript -->
+    <script src ="script.js"></script>
+</body>
+</html>
