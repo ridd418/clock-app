@@ -9,8 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Store current interval.
     let clockInterval = null
-
-
     
     // Kills current interval.
     const clearTimer = () => {
@@ -19,9 +17,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Format and Render Time.
-    const renderDisplay = (hours, minutes, seconds) => {
-        const formatTIme = (time) => String(time).padStart(2, '0')
-        displayEL.textContent = `${formatTIme(hours)}:${formatTIme(minutes)}:${formatTIme(seconds)}`
+    const renderDisplay = (hours=0, minutes=0, seconds=0) => {
+        const formatTime = (time) => String(time).padStart(2, '0')
+        displayEL.textContent = `${formatTime(hours)}:${formatTime(minutes)}:${formatTime(seconds)}`
     }
 
     // Render Clock.
@@ -54,62 +52,41 @@ document.addEventListener('DOMContentLoaded', () => {
     // Stopwatch object.
     const Stopwatch = () => {
 
-        // Track running status
+        // Track running status for clean resume after pause.
         let isRunning = false
 
         // Countable time variables for stopwatch.
-        let hours = 0, minutes = 0, seconds = 0
-
-        // Renders to Display when called.
-        const renderTicks = () => renderDisplay(hours, minutes, seconds)
-        
-        // Reset h,m,s hand.
-        const resetHMS = (h, m, s) => {
-            hours = h
-            minutes = m
-            seconds = s            
-        }
+        let hours = minutes = seconds = 0
 
         // Start Control.
         const start = () => {
             // Avoids simultaneous timer intervals.
-            if (clockInterval !== null) return
+            if (clockInterval) return
 
             const updateTicks = () => {
-                renderTicks()
+                renderDisplay(hours, minutes, seconds)
                     
-                if (seconds < 59) {
-                    seconds++
-                }else if (minutes < 59) {
-                    resetHMS(hours, minutes, 0)
-                    minutes++
-                }else if (hours < 23) {
-                    resetHMS(hours, 0, 0)
-                    hours++
-                }else {
-                    clearTimer()
-                    resetHMS(0, 0, 0)
-                    renderTicks()
-                } 
+                if (seconds < 59) seconds++
+                else if (minutes < 59) seconds = 0, minutes++
+                else if (hours < 23) minutes = seconds = 0, hours++ 
+                else clearTimer(), hours = minutes = seconds = 0, renderDisplay()
+                
             }
                 
-            // Calling immidiately for first run, same as clock.
+            // Calling immidiately for first run.
             if (!isRunning) updateTicks()
             clockInterval = setInterval(updateTicks, 1000)
             isRunning = true
         }
 
         // Pause Control.
-        const pause = () => {
-            clearTimer()
-            isRunning = false
-        }
+        const pause = () => { clearTimer() }
 
         // Reset Control.
         const reset = () => {
             clearTimer()
-            resetHMS(0, 0, 0)
-            renderTicks()
+            hours = minutes = seconds = 0
+            renderDisplay()
             isRunning = false
         }
         
