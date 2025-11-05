@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Store current interval.
     let clockInterval = null
     
+    // Shared interval between Clock, Stopwatch, and Timer.
     // Kills current interval.
     const clearTimer = () => {
         clearInterval(clockInterval)
@@ -40,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
             renderDisplay(hours, minutes, seconds)
         }
 
-        // Calling immidiately prevents loading delay.
+        // Calling immediately prevents loading delay.
         updateTime()
 
         // Handles subsequent updates ever 1s.
@@ -49,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
     }
 
-    // Stopwatch object.
+    // Stopwatch Factory Function.
     const Stopwatch = () => {
 
         // Track running status for clean resume after pause.
@@ -63,6 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Avoids simultaneous timer intervals.
             if (clockInterval) return
 
+            // Time Update Logic
             const updateTicks = () => {
                 renderDisplay(hours, minutes, seconds)
                     
@@ -73,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
             }
                 
-            // Calling immidiately for first run.
+            // Calling immediately for first run.
             if (!isRunning) updateTicks()
             clockInterval = setInterval(updateTicks, 1000)
             isRunning = true
@@ -95,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Creating stopwatch instance.
-    const stopwatch = Stopwatch() 
+    const stopwatch = Stopwatch()
 
     // Render Stopwatch.
     const renderStopwatch = () => {
@@ -107,13 +109,74 @@ document.addEventListener('DOMContentLoaded', () => {
         stopwatch.reset()
     }
 
+    // Timer Factory Function.
+    const Timer = () => {
+
+        // Track running status for clean resume after pause.
+        let isRunning = false
+
+        // Countable time variables for stopwatch.
+        let hours = minutes = seconds = 0
+
+        // Storing Input elements.
+        const hoursInput = document.getElementById('input-hours')
+        const minutesInput = document.getElementById('input-minutes')
+        const secondsInput = document.getElementById('input-seconds')
+
+        // Start Control.
+        const start = () => {
+            // Avoids simultaneous timer intervals.
+            if (clockInterval) return
+
+            // Pulling values when not running.
+            if (!isRunning) { 
+                hours = Number(hoursInput.value) || 0
+                minutes = Number(minutesInput.value) || 0
+                seconds = Number(secondsInput.value) || 0
+                hoursInput.value = minutesInput.value = secondsInput.value = ''
+            }    
+
+            // Time Update Logic
+            const updateTicks = () => {
+                renderDisplay(hours, minutes, seconds)
+                    
+                if (seconds > 0) seconds--
+                else if (minutes > 0) seconds = 59, minutes--
+                else if (hours > 0) minutes = seconds = 59, hours-- 
+                else clearTimer(), hours = minutes = seconds = 0, renderDisplay()
+                
+            }
+                
+            // Calling immediately for first run.
+            if (!isRunning) updateTicks()
+            clockInterval = setInterval(updateTicks, 1000)
+            isRunning = true
+        }
+        // Pause Control.
+        const pause = () => { clearTimer() }
+        // Reset Control.
+        const reset = () => {
+            clearTimer()
+            hours = minutes = seconds = 0
+            renderDisplay()
+            isRunning = false
+        }
+
+        // Return Controls.
+        return {start, pause, reset}
+    }
+
+    // Creating Timer instance.
+    const timer = Timer()
+
     // Render Timer.
     const renderTimer = () => {
         clearTimer()
         stopwatchControls.classList.add('hidden')
         timerControls.classList.remove('hidden')
         
-        displayEL.textContent = '00:00:00'
+        // Resets Display.
+        timer.reset()
     }
 
     // Default render on page load.
@@ -128,25 +191,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const setMode = (mode) => modeButtons.forEach((btn) => btn.classList.toggle('active', btn.id === mode))
 
         // Event Logic for nav.
-        if (targetId === 'clock') {
-        renderClock()
-        setMode(targetId)
-        } else if (targetId === 'stopwatch') {
-        setMode(targetId)
-        renderStopwatch()
-        } else if (targetId === 'timer') {
-        setMode(targetId)
-        renderTimer()
-        }
+        if (targetId === 'clock') setMode(targetId), renderClock()
+        else if (targetId === 'stopwatch') setMode(targetId), renderStopwatch()
+        else if (targetId === 'timer') setMode(targetId), renderTimer()
 
         // Event Logic for Stopwatch controls.
-        if (targetId === 'start-stopwatch') {
-            stopwatch.start()
-        }else if (targetId === 'pause-stopwatch') {
-            stopwatch.pause()
-        }else if (targetId === 'reset-stopwatch') {
-            stopwatch.reset()
-        }
+        if (targetId === 'start-stopwatch') stopwatch.start()
+        else if (targetId === 'pause-stopwatch') stopwatch.pause()
+        else if (targetId === 'reset-stopwatch') stopwatch.reset()
+        
+
+        // Event Logic for the timer
+        if (targetId === 'start-timer') timer.start()
+        else if (targetId === 'pause-timer') timer.pause()
+        else if (targetId === 'reset-timer') timer.reset()
     })
 
 })
